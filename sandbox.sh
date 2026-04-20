@@ -13,6 +13,7 @@ fi
 KUBE_BIND=false
 FILTERED_ARGS=()
 for arg in "$@"; do
+  echo "Processing: $arg"
     if [[ "$arg" == "--kube" ]]; then
         KUBE_BIND=true
     else
@@ -36,19 +37,21 @@ BWRAP_CMD+=" --dir /tmp"
 BWRAP_CMD+=" --proc /proc"
 BWRAP_CMD+=" --dev /dev"
 
-# Bind kube config if requested and exists
-if [[ "$KUBE_BIND" == true && -d "$HOME/.kube" ]]; then
-    BWRAP_CMD+=" --ro-bind $HOME/.kube /home/$USER/.kube"
-fi
-
 # Setup a virtual home directory
 BWRAP_CMD+=" --tmpfs /home/$USER"
+
 
 # Bind the opencode configuration (read-only)
 BWRAP_CMD+=" --ro-bind ~/.config/opencode /home/$USER/.config/opencode"
 BWRAP_CMD+=" --bind ~/.opencode /home/$USER/.opencode"
 BWRAP_CMD+=" --bind ~/.local/share/opencode /home/$USER/.local/share/opencode"
 BWRAP_CMD+=" --bind ~/.local/state/opencode /home/$USER/.local/state/opencode"
+
+# Bind kube config if requested and exists
+if [[ "$KUBE_BIND" == true && -d ~/.kube ]]; then
+    echo "Adding Kubernetes access"
+    BWRAP_CMD+=" --ro-bind ~/.kube /home/$USER/.kube"
+fi
 
 
 # Bind the current working directory
