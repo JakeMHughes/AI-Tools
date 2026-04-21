@@ -11,11 +11,14 @@ fi
 
 # Handle optional parameters
 KUBE_BIND=false
+NPM_BIND=false
 FILTERED_ARGS=()
 for arg in "$@"; do
   echo "Processing: $arg"
     if [[ "$arg" == "--kube" ]]; then
         KUBE_BIND=true
+    elif [[ "$arg" == "--npm" ]]; then
+        NPM_BIND=true
     else
         FILTERED_ARGS+=("$arg")
     fi
@@ -51,6 +54,15 @@ BWRAP_CMD+=" --bind ~/.local/state/opencode /home/$USER/.local/state/opencode"
 if [[ "$KUBE_BIND" == true && -d ~/.kube ]]; then
     echo "Adding Kubernetes access"
     BWRAP_CMD+=" --ro-bind ~/.kube /home/$USER/.kube"
+fi
+
+# Bind NPM config if requested
+if [[ "$NPM_BIND" == true ]]; then
+    echo "Adding NPM access"
+    [[ -d /usr/local/lib/node_modules ]] && BWRAP_CMD+=" --ro-bind /usr/local/lib/node_modules /usr/local/lib/node_modules"
+    [[ -d /usr/lib/node_modules ]] && BWRAP_CMD+=" --ro-bind /usr/lib/node_modules /usr/lib/node_modules"
+    [[ -d ~/.npm ]] && BWRAP_CMD+=" --ro-bind ~/.npm /home/$USER/.npm"
+    [[ -f ~/.npmrc ]] && BWRAP_CMD+=" --ro-bind ~/.npmrc /home/$USER/.npmrc"
 fi
 
 

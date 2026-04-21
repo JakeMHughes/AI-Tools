@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenCode Configuration Guide</title>
+    <style>
+      :root {
+        --bg-color: #0d1117;
+        --text-color: #c9d1d9;
+        --accent-color: #58a6ff;
+        --border-color: #30363d;
+        --table-header-bg: #161b22;
+        --code-bg: #1c2128;
+        --highlight-color: #f0883e;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 0;
+        display: flex;
+      }
+      nav {
+        width: 280px;
+        height: 100vh;
+        position: fixed;
+        background-color: var(--table-header-bg);
+        border-right: 1px solid var(--border-color);
+        padding: 2rem 1rem;
+        overflow-y: auto;
+        box-sizing: border-box;
+      }
+      nav h2 {
+        font-size: 1.2rem;
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+      }
+      nav ul {
+        list-style: none;
+        padding: 0;
+      }
+      nav ul li {
+        margin-bottom: 0.5rem;
+      }
+      nav ul li a {
+        color: var(--text-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+      nav ul li a:hover {
+        color: var(--accent-color);
+      }
+      main {
+        margin-left: 280px;
+        padding: 3rem 4rem;
+        max-width: 1000px;
+        box-sizing: border-box;
+      }
+      h1 {
+        font-size: 2.5rem;
+        color: var(--accent-color);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+      h2 {
+        font-size: 1.8rem;
+        margin-top: 3rem;
+        color: var(--accent-color);
+        border-left: 4px solid var(--accent-color);
+        padding-left: 1rem;
+      }
+      h3 {
+        font-size: 1.3rem;
+        margin-top: 2rem;
+        color: #8b949e;
+      }
+      p {
+        margin-bottom: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+      }
+      th {
+        background-color: var(--table-header-bg);
+        color: var(--accent-color);
+        font-weight: 600;
+      }
+      tr:nth-child(even) {
+        background-color: rgba(48, 54, 61, 0.2);
+      }
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        background-color: var(--code-bg);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        color: var(--highlight-color);
+        font-size: 0.9rem;
+      }
+      pre {
+        background-color: var(--code-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        border: 1px solid var(--border-color);
+        margin: 1.5rem 0;
+      }
+      pre code {
+        background-color: transparent;
+        color: var(--text-color);
+        padding: 0;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        background-color: var(--border-color);
+        color: var(--text-color);
+        margin-left: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h2>OpenCode Config</h2>
+      <ul>
+        <li><a href="#core">Core AI & Models</a></li>
+        <li><a href="#model-details">Model Object Details</a></li>
+        <li><a href="#agents">Agent Configuration</a></li>
+        <li><a href="#permissions">Permissions System</a></li>
+        <li><a href="#compaction">Context Compaction</a></li>
+        <li><a href="#integrations">Tools & Integrations</a></li>
+        <li><a href="#system">System & TUI</a></li>
+        <li><a href="#experimental">Experimental</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Configuration Guide</h1>
+      <p>
+        OpenCode is configured primarily through <code>opencode.jsonc</code> (main settings) and
+        <code>tui.json</code> (UI and keybindings). This guide provides a detailed overview of all available options.
+      </p>
+
+      <section id="core">
+        <h2>1. Core AI & Model Configuration</h2>
+        <p>Define which AI providers and models OpenCode uses to power its intelligence.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>model</code></td>
+              <td><code>string</code></td>
+              <td>
+                Active model ID in <code>provider/model</code> format (e.g., <code>anthropic/claude-3-5-sonnet</code>).
+              </td>
+            </tr>
+            <tr>
+              <td><code>small_model</code></td>
+              <td><code>string</code></td>
+              <td>Faster model for background tasks like session title generation.</td>
+            </tr>
+            <tr>
+              <td><code>enabled_providers</code></td>
+              <td><code>string[]</code></td>
+              <td>If set, only these providers will be loaded.</td>
+            </tr>
+            <tr>
+              <td><code>disabled_providers</code></td>
+              <td><code>string[]</code></td>
+              <td>Providers to ignore during automatic loading.</td>
+            </tr>
+            <tr>
+              <td><code>provider</code></td>
+              <td><code>record</code></td>
+              <td>
+                Custom overrides: <code>apiKey</code>, <code>baseURL</code>, <code>timeout</code>, and
+                <code>models</code>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="model-details">
+        <h2>Model Object Detailed Configuration</h2>
+        <p>
+          When overriding models within the <code>provider</code> configuration, you can use the
+          <code>Model</code> object to define precise capabilities, limits, and costs.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td><code>string</code></td>
+              <td>The unique identifier for the model.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td><code>string</code></td>
+              <td>The human-readable display name.</td>
+            </tr>
+            <tr>
+              <td><code>family</code></td>
+              <td><code>string</code></td>
+              <td>The model family (e.g., <code>Claude 3.5</code>).</td>
+            </tr>
+            <tr>
+              <td><code>release_date</code></td>
+              <td><code>string</code></td>
+              <td>The official release date of the model.</td>
+            </tr>
+            <tr>
+              <td><code>attachment</code></td>
+              <td><code>boolean</code></td>
+              <td>Whether the model supports file attachments.</td>
+            </tr>
+            <tr>
+              <td><code>reasoning</code></td>
+              <td><code>boolean</code></td>
+              <td>Whether the model has native reasoning capabilities.</td>
+            </tr>
+            <tr>
+              <td><code>temperature</code></td>
+              <td><code>boolean</code></td>
+              <td>Whether the model supports temperature adjustments.</td>
+            </tr>
+            <tr>
+              <td><code>tool_call</code></td>
+              <td><code>boolean</code></td>
+              <td>Whether the model supports tool calling.</td>
+            </tr>
+            <tr>
+              <td><code>interleaved</code></td>
+              <td><code>union</code></td>
+              <td>
+                Support for interleaved content. Can be <code>true</code> or an object specifying the reasoning field
+                (<code>reasoning_content</code> or <code>reasoning_details</code>).
+              </td>
+            </tr>
+            <tr>
+              <td><code>cost</code></td>
+              <td><code>object</code></td>
+              <td>
+                Pricing per token for <code>input</code>, <code>output</code>, <code>cache_read</code>, and
+                <code>cache_write</code>. Can include a <code>context_over_200k</code> override.
+              </td>
+            </tr>
+            <tr>
+              <td><code>limit</code></td>
+              <td><code>object</code></td>
+              <td>Token limits for <code>context</code>, <code>input</code>, and <code>output</code>.</td>
+            </tr>
+            <tr>
+              <td><code>modalities</code></td>
+              <td><code>object</code></td>
+              <td>
+                Supported input/output types (<code>text</code>, <code>audio</code>, <code>image</code>,
+                <code>video</code>, <code>pdf</code>).
+              </td>
+            </tr>
+            <tr>
+              <td><code>experimental</code></td>
+              <td><code>boolean</code></td>
+              <td>Marks the model as experimental.</td>
+            </tr>
+            <tr>
+              <td><code>status</code></td>
+              <td><code>enum</code></td>
+              <td>Current status: <code>alpha</code>, <code>beta</code>, or <code>deprecated</code>.</td>
+            </tr>
+            <tr>
+              <td><code>provider</code></td>
+              <td><code>object</code></td>
+              <td>Provider identifiers (<code>npm</code> package name or <code>api</code> endpoint).</td>
+            </tr>
+            <tr>
+              <td><code>options</code></td>
+              <td><code>record</code></td>
+              <td>Provider-specific configuration options.</td>
+            </tr>
+            <tr>
+              <td><code>headers</code></td>
+              <td><code>record</code></td>
+              <td>Custom HTTP headers to be sent with requests.</td>
+            </tr>
+            <tr>
+              <td><code>variants</code></td>
+              <td><code>record</code></td>
+              <td>Configuration for model variants, including a <code>disabled</code> flag.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>Example: Complete Model Definition</h3>
+        <p>
+          Below is an example of a fully defined <code>Model</code> object as it would appear inside a provider's
+          <code>models</code> record:
+        </p>
+        <pre><code>{
+  "id": "custom/super-model",
+  "name": "Super Model 4K",
+  "family": "Omni",
+  "release_date": "2026-04-15",
+  "attachment": true,
+  "reasoning": true,
+  "temperature": true,
+  "tool_call": true,
+  "interleaved": {
+    "field": "reasoning_content"
+  },
+  "cost": {
+    "input": 0.003,
+    "output": 0.015,
+    "cache_read": 0.0003,
+    "cache_write": 0.0006,
+    "context_over_200k": {
+      "input": 0.006,
+      "output": 0.030,
+      "cache_read": 0.0006,
+      "cache_write": 0.0012
+    }
+  },
+  "limit": {
+    "context": 200000,
+    "input": 128000,
+    "output": 4096
+  },
+  "modalities": {
+    "input": ["text", "image", "pdf"],
+    "output": ["text"]
+  },
+  "experimental": false,
+  "status": "beta",
+  "provider": {
+    "npm": "@opencode-ai/provider-custom",
+    "api": "https://api.custom.ai"
+  },
+  "options": {
+    "custom_param": "value"
+  },
+  "headers": {
+    "X-Custom-Header": "True"
+  },
+  "variants": {
+    "fast": {
+      "disabled": false
+    },
+    "legacy": {
+      "disabled": true
+    }
+  }
+}</code></pre>
+      </section>
+
+      <section id="agents">
+        <h2>2. Agent Configuration</h2>
+        <p>Customize built-in agents or define new ones under <code>agent.&lt;name&gt;</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>model</code></td>
+              <td><code>string</code></td>
+              <td>Override the global model for this specific agent.</td>
+            </tr>
+            <tr>
+              <td><code>prompt</code></td>
+              <td><code>string</code></td>
+              <td>Custom system instructions for the agent.</td>
+            </tr>
+            <tr>
+              <td><code>temperature</code></td>
+              <td><code>number</code></td>
+              <td>Randomness (0.0 = deterministic, 1.0 = creative).</td>
+            </tr>
+            <tr>
+              <td><code>top_p</code></td>
+              <td><code>number</code></td>
+              <td>Nucleus sampling parameter.</td>
+            </tr>
+            <tr>
+              <td><code>steps</code></td>
+              <td><code>number</code></td>
+              <td>Max agentic iterations before forcing a text response.</td>
+            </tr>
+            <tr>
+              <td><code>mode</code></td>
+              <td><code>enum</code></td>
+              <td><code>primary</code>, <code>subagent</code>, or <code>all</code>.</td>
+            </tr>
+            <tr>
+              <td><code>hidden</code></td>
+              <td><code>boolean</code></td>
+              <td>If true, agent is hidden from the <code>@</code> autocomplete menu.</td>
+            </tr>
+            <tr>
+              <td><code>color</code></td>
+              <td><code>string</code></td>
+              <td>UI color (Hex code or theme name like <code>success</code>).</td>
+            </tr>
+            <tr>
+              <td><code>permission</code></td>
+              <td><code>object</code></td>
+              <td>Agent-specific tool permissions.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <strong>Default Agent:</strong> Use <code>default_agent</code> to specify the starting primary agent (defaults
+          to <code>build</code>).
+        </p>
+        <h3>Example: Agent Configuration</h3>
+        <p>Below is an example of how to define a specialized agent in your <code>opencode.jsonc</code>:</p>
+        <pre><code>{
+  "agent": {
+    "reviewer": {
+      "model": "anthropic/claude-3-5-sonnet",
+      "prompt": "You are a strict code reviewer. Focus on security, performance, and maintainability.",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "steps": 5,
+      "mode": "primary",
+      "hidden": false,
+      "color": "#ff5733",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "read": "allow"
+      }
+    }
+  }
+}</code></pre>
+      </section>
+
+      <section id="permissions">
+        <h2>3. The Permissions System</h2>
+        <p>Control what the AI can do with your system globally or per agent.</p>
+        <p>Permissions can be <code>"allow"</code>, <code>"deny"</code>, or <code>"ask"</code>.</p>
+
+        <div
+          style="
+            background-color: rgba(240, 136, 62, 0.1);
+            border: 1px solid var(--highlight-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+          "
+        >
+          <strong>⚠️ Important: Order Matters</strong><br />
+          OpenCode uses a <strong>last-match-wins</strong> strategy. Rules are evaluated from the bottom up; therefore,
+          rules defined later in your configuration object will override any matching rules defined earlier.
+        </div>
+
+        <h3>Available Keys</h3>
+        <p>
+          <code>read</code>, <code>edit</code>, <code>glob</code>, <code>grep</code>, <code>list</code>,
+          <code>bash</code>, <code>task</code>, <code>external_directory</code>, <code>webfetch</code>,
+          <code>websearch</code>, <code>codesearch</code>, <code>lsp</code>, <code>skill</code>, <code>question</code>,
+          <code>todowrite</code>.
+        </p>
+        <pre><code>"permission": {
+  "edit": "allow",                // 1. Allow editing everything by default
+  "edit": {
+    "packages/core/*": "deny"     // 2. Override: deny editing core files (This wins for core files)
+  }
+}</code></pre>
+      </section>
+
+      <section id="compaction">
+        <h2>4. Context Management (Compaction)</h2>
+        <p>Manage session "memory" as it approaches the model's token limit.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>auto</code></td>
+              <td><code>boolean</code></td>
+              <td><code>true</code></td>
+              <td>Automatically compact when context is full.</td>
+            </tr>
+            <tr>
+              <td><code>prune</code></td>
+              <td><code>boolean</code></td>
+              <td><code>true</code></td>
+              <td>Erase old tool outputs to reclaim space.</td>
+            </tr>
+            <tr>
+              <td><code>reserved</code></td>
+              <td><code>number</code></td>
+              <td><code>20000</code></td>
+              <td>Token buffer. Triggered at <code>MaxContext - reserved</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <strong>Note on Calculation:</strong> The compaction trigger is based on the <em>effective</em> limit of the
+          model. If you override a model's context limit in the <code>provider</code> configuration, the
+          <code>reserved</code> buffer is subtracted from that new overridden limit to determine when auto-compaction
+          begins.
+        </p>
+      </section>
+
+      <section id="integrations">
+        <h2>5. Tools & Integrations</h2>
+
+        <h3>MCP (Model Context Protocol)</h3>
+        <p>
+          <strong>What it is:</strong> MCP is an open standard that enables AI models to seamlessly connect to external
+          data sources and tools.
+        </p>
+        <p>
+          <strong>What it does:</strong> It acts as a standardized bridge between the LLM and "MCP Servers." These
+          servers can expose databases, internal APIs, file systems, or third-party services (like Slack or GitHub) to
+          the agent as tools.
+        </p>
+        <p>
+          <strong>When to use it:</strong> Use MCP when you need the agent to interact with data or functionality that
+          is not provided by the built-in toolset. For example, if you want the agent to query a production database or
+          fetch tickets from a project management tool.
+        </p>
+        <p>
+          Configure these under <code>mcp.&lt;name&gt;</code>. Local servers use a <code>command</code>; remote servers
+          use a <code>url</code>.
+        </p>
+
+        <h3>LSP (Language Server Protocol)</h3>
+        <p>
+          <strong>What it is:</strong> LSP is a protocol that decouples the editor (OpenCode) from the language-specific
+          intelligence (the Language Server).
+        </p>
+        <p>
+          <strong>What it does:</strong> It provides the agent with "IDE-like" capabilities, including precise
+          go-to-definition, find-references, real-time type checking, and advanced refactoring, regardless of the
+          language being used.
+        </p>
+
+        <h4>Default Included LSPs</h4>
+        <p>OpenCode comes with a vast array of built-in LSPs. Some of the most common include:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Language</th>
+              <th>LSP ID</th>
+              <th>Extensions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TypeScript/JS</td>
+              <td><code>typescript</code></td>
+              <td><code>.ts, .tsx, .js, .jsx</code></td>
+            </tr>
+            <tr>
+              <td>Rust</td>
+              <td><code>rust</code></td>
+              <td><code>.rs</code></td>
+            </tr>
+            <tr>
+              <td>Go</td>
+              <td><code>gopls</code></td>
+              <td><code>.go</code></td>
+            </tr>
+            <tr>
+              <td>Python</td>
+              <td><code>pyright</code></td>
+              <td><code>.py, .pyi</code></td>
+            </tr>
+            <tr>
+              <td>C/C++</td>
+              <td><code>clangd</code></td>
+              <td><code>.c, .cpp, .h, .hpp</code></td>
+            </tr>
+            <tr>
+              <td>Java</td>
+              <td><code>jdtls</code></td>
+              <td><code>.java</code></td>
+            </tr>
+            <tr>
+              <td>Bash</td>
+              <td><code>bash</code></td>
+              <td><code>.sh, .bash, .zsh</code></td>
+            </tr>
+            <tr>
+              <td>Nix</td>
+              <td><code>nixd</code></td>
+              <td><code>.nix</code></td>
+            </tr>
+            <tr>
+              <td>Svelte/Vue/Astro</td>
+              <td><code>svelte, vue, astro</code></td>
+              <td><code>.svelte, .vue, .astro</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>You can override or add custom servers under <code>lsp.&lt;id&gt;</code>.</p>
+
+        <h3>Formatters</h3>
+        <p>
+          <strong>What it is:</strong> Formatters are tools that automatically rewrite source code to conform to a
+          specific style guide (e.g., Prettier for JS, Black for Python).
+        </p>
+        <p>
+          <strong>What it does:</strong> It ensures that every change the agent makes to your codebase follows a
+          consistent style, preventing "formatting noise" in your git diffs.
+        </p>
+        <p>
+          Set per-language formatting under <code>formatter.&lt;lang&gt;</code> by defining the <code>command</code> to
+          run.
+        </p>
+      </section>
+
+      <section id="system">
+        <h2>6. System & TUI Configuration</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>logLevel</code></td>
+              <td><code>enum</code></td>
+              <td><code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</td>
+            </tr>
+            <tr>
+              <td><code>username</code></td>
+              <td><code>string</code></td>
+              <td>Custom name displayed in conversations.</td>
+            </tr>
+            <tr>
+              <td><code>snapshot</code></td>
+              <td><code>boolean</code></td>
+              <td>Track file changes for undo/redo (Default: true).</td>
+            </tr>
+            <tr>
+              <td><code>autoupdate</code></td>
+              <td><code>union</code></td>
+              <td><code>true</code>, <code>false</code>, or <code>"notify"</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>TUI Settings (<code>tui.json</code>)</h3>
+        <p>Manage plugins and custom keybindings for the terminal interface.</p>
+      </section>
+
+      <section id="experimental">
+        <h2>7. Experimental Features</h2>
+        <p>Toggle unstable features under the <code>experimental</code> key:</p>
+        <ul>
+          <li><code>batch_tool</code>: Enable grouped tool calls.</li>
+          <li><code>openTelemetry</code>: Enable AI SDK telemetry spans.</li>
+          <li><code>primary_tools</code>: Limit specific tools to primary agents.</li>
+          <li><code>continue_loop_on_deny</code>: Continue agent loop even after a permission denial.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

@@ -16,7 +16,10 @@ Tool to run opencode in a sandboxed environment using `bwrap`.
 2. Run the sandbox script:
    ```bash
 ./sandbox.sh [arguments]
-    ```
+   ```
+
+## Configuration
+For more detailed information on configuring `opencode`, please refer to `OpenCode-Config.html`.
 
 ## Arguments
 
