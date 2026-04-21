@@ -25,7 +25,14 @@ For more detailed information on configuring `opencode`, please refer to `OpenCo
 
 The `sandbox.sh` script supports the following optional arguments:
 
-- `--kube`: Binds the `~/.kube` directory into the sandbox as read-only, allowing `opencode` to access Kubernetes configurations.
+- `--kube`: Binds the `~/.kube` directory into the sandbox as read-only.
+- `--npm`: Binds Node.js modules and config (`/usr/local/lib/node_modules`, `/usr/lib/node_modules`, `~/.npm`, `~/.npmrc`).
+- `--aws`: Binds the `~/.aws` directory.
+- `--google-cloud` or `--gcp`: Binds the `~/.config/gcloud` directory.
+- `--azure`: Binds the `~/.azure` directory.
+- `--docker`: Binds the `~/.docker` directory.
+- `--ssh`: Binds the `~/.ssh` and `~/.gnupg` directories.
+- `--java`: Binds the `~/.m2` directory.
 
 ## Setup as Default
 

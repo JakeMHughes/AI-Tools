@@ -12,6 +12,12 @@ fi
 # Handle optional parameters
 KUBE_BIND=false
 NPM_BIND=false
+AWS_BIND=false
+GCP_BIND=false
+AZURE_BIND=false
+DOCKER_BIND=false
+SSH_BIND=false
+JAVA_BIND=false
 FILTERED_ARGS=()
 for arg in "$@"; do
   echo "Processing: $arg"
@@ -19,6 +25,18 @@ for arg in "$@"; do
         KUBE_BIND=true
     elif [[ "$arg" == "--npm" ]]; then
         NPM_BIND=true
+    elif [[ "$arg" == "--aws" ]]; then
+        AWS_BIND=true
+    elif [[ "$arg" == "--google-cloud" || "$arg" == "--gcp" ]]; then
+        GCP_BIND=true
+    elif [[ "$arg" == "--azure" ]]; then
+        AZURE_BIND=true
+    elif [[ "$arg" == "--docker" ]]; then
+        DOCKER_BIND=true
+    elif [[ "$arg" == "--ssh" ]]; then
+        SSH_BIND=true
+    elif [[ "$arg" == "--java" ]]; then
+        JAVA_BIND=true
     else
         FILTERED_ARGS+=("$arg")
     fi
@@ -49,6 +67,7 @@ BWRAP_CMD+=" --ro-bind ~/.config/opencode /home/$USER/.config/opencode"
 BWRAP_CMD+=" --bind ~/.opencode /home/$USER/.opencode"
 BWRAP_CMD+=" --bind ~/.local/share/opencode /home/$USER/.local/share/opencode"
 BWRAP_CMD+=" --bind ~/.local/state/opencode /home/$USER/.local/state/opencode"
+BWRAP_CMD+=" --ro-bind ~/.gitconfig /home/$USER/.gitconfig"
 
 # Bind kube config if requested and exists
 if [[ "$KUBE_BIND" == true && -d ~/.kube ]]; then
@@ -63,6 +82,43 @@ if [[ "$NPM_BIND" == true ]]; then
     [[ -d /usr/lib/node_modules ]] && BWRAP_CMD+=" --ro-bind /usr/lib/node_modules /usr/lib/node_modules"
     [[ -d ~/.npm ]] && BWRAP_CMD+=" --ro-bind ~/.npm /home/$USER/.npm"
     [[ -f ~/.npmrc ]] && BWRAP_CMD+=" --ro-bind ~/.npmrc /home/$USER/.npmrc"
+fi
+
+# Bind AWS config if requested
+if [[ "$AWS_BIND" == true && -d ~/.aws ]]; then
+    echo "Adding AWS access"
+    BWRAP_CMD+=" --ro-bind ~/.aws /home/$USER/.aws"
+fi
+
+# Bind GCP config if requested
+if [[ "$GCP_BIND" == true && -d ~/.config/gcloud ]]; then
+    echo "Adding GCP access"
+    BWRAP_CMD+=" --ro-bind ~/.config/gcloud /home/$USER/.config/gcloud"
+fi
+
+# Bind Azure config if requested
+if [[ "$AZURE_BIND" == true && -d ~/.azure ]]; then
+    echo "Adding Azure access"
+    BWRAP_CMD+=" --ro-bind ~/.azure /home/$USER/.azure"
+fi
+
+# Bind Docker config if requested
+if [[ "$DOCKER_BIND" == true && -d ~/.docker ]]; then
+    echo "Adding Docker access"
+    BWRAP_CMD+=" --ro-bind ~/.docker /home/$USER/.docker"
+fi
+
+# Bind SSH and GPG config if requested
+if [[ "$SSH_BIND" == true ]]; then
+    echo "Adding SSH/GPG access"
+    [[ -d ~/.ssh ]] && BWRAP_CMD+=" --ro-bind ~/.ssh /home/$USER/.ssh"
+    [[ -d ~/.gnupg ]] && BWRAP_CMD+=" --ro-bind ~/.gnupg /home/$USER/.gnupg"
+fi
+
+# Bind Java config if requested
+if [[ "$JAVA_BIND" == true && -d ~/.m2 ]]; then
+    echo "Adding Java access"
+    BWRAP_CMD+=" --ro-bind ~/.m2 /home/$USER/.m2"
 fi
 
 
